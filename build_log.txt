@@ -1,0 +1,23 @@
+﻿src/db/storage.ts(1,25): error TS6133: 'values' is declared but its value is never read.
+src/pages/CashEntryPage.tsx(4,45): error TS2307: Cannot find module '../../db/storage' or its corresponding type declarations.
+src/pages/CashEntryPage.tsx(5,48): error TS2307: Cannot find module '../../types' or its corresponding type declarations.
+src/pages/CashEntryPage.tsx(29,68): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/pages/CashEntryPage.tsx(32,46): error TS2538: Type 'unknown' cannot be used as an index type.
+src/pages/CashEntryPage.tsx(35,36): error TS7006: Parameter 'dc' implicitly has an 'any' type.
+src/pages/CashEntryPage.tsx(105,72): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/pages/ExportPage.tsx(5,30): error TS2307: Cannot find module '../../db/storage' or its corresponding type declarations.
+src/pages/ExportPage.tsx(6,32): error TS2307: Cannot find module '../../types' or its corresponding type declarations.
+src/pages/ExportPage.tsx(30,48): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/pages/ExportPage.tsx(45,52): error TS7006: Parameter 'emp' implicitly has an 'any' type.
+src/pages/ExportPage.tsx(46,28): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/pages/ExportPage.tsx(53,57): error TS7006: Parameter 'd' implicitly has an 'any' type.
+src/pages/ReviewPage.tsx(4,45): error TS2307: Cannot find module '../../db/storage' or its corresponding type declarations.
+src/pages/ReviewPage.tsx(5,30): error TS2307: Cannot find module '../../utils/calculations' or its corresponding type declarations.
+src/pages/ReviewPage.tsx(6,52): error TS2307: Cannot find module '../../types' or its corresponding type declarations.
+src/pages/ReviewPage.tsx(137,70): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/pages/ReviewPage.tsx(137,73): error TS7006: Parameter 'idx' implicitly has an 'any' type.
+src/pages/UploadPage.tsx(4,40): error TS2307: Cannot find module '../../utils/parser' or its corresponding type declarations.
+src/pages/UploadPage.tsx(5,47): error TS2307: Cannot find module '../../types' or its corresponding type declarations.
+src/pages/UploadPage.tsx(6,31): error TS2307: Cannot find module '../../db/storage' or its corresponding type declarations.
+src/pages/UploadPage.tsx(61,59): error TS7006: Parameter 'sum' implicitly has an 'any' type.
+src/pages/UploadPage.tsx(61,64): error TS7006: Parameter 's' implicitly has an 'any' type.
