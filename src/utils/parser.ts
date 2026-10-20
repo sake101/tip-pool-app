@@ -5,7 +5,10 @@ import type { Shift, ExcludedShift } from '../types';
 
 type RawRow = Record<string, unknown>;
 
-const cellText = (row: RawRow, column: string): string => String(row[column] || '');
+const cellText = (row: RawRow, column: string): string => {
+    const value = row[column];
+    return value === 0 ? '0' : String(value || '');
+};
 
 export interface ParseResult {
     shifts: Shift[];

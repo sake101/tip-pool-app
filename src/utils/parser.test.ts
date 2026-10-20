@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { processData } from './parser';
 
-const row = (overrides: Record<string, string> = {}) => ({
+const row = (overrides: Record<string, unknown> = {}) => ({
     Employee: 'Synthetic Server',
     Location: 'Bar',
     Job: 'Server',
@@ -43,5 +43,13 @@ describe('processData', () => {
 
         expect(result.shifts).toEqual([]);
         expect(result.errors[0]).toContain('Missing required columns');
+    });
+
+    it.each([0, '0'])('retains a zero payable-hours cell (%s)', (payableHours) => {
+        const result = processData([row({ 'Payable Hours': payableHours })]);
+
+        expect(result.shifts).toHaveLength(1);
+        expect(result.shifts[0].payableHours).toBe(0);
+        expect(result.excludedShifts).toEqual([]);
     });
 });
