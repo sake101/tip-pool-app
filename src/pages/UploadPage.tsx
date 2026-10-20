@@ -16,7 +16,6 @@ export const UploadPage: React.FC = () => {
         setError(null);
         try {
             const result = await parseFile(file);
-            console.log("Parsed:", result);
             if (result.errors.length > 0) {
                 // Determine if fatal? For now, show errors and block if empty.
                 if (result.shifts.length === 0) {
@@ -28,8 +27,15 @@ export const UploadPage: React.FC = () => {
             } else {
                 setPreview(result);
             }
-        } catch (e: any) {
-            setError(Array.isArray(e) ? e.join('\n') : e.message || "Unknown error parsing file");
+        } catch (error: unknown) {
+            const message = Array.isArray(error)
+                ? error.map(String).join('\n')
+                : error instanceof Error
+                    ? error.message
+                    : typeof error === 'string'
+                        ? error
+                        : "Unknown error parsing file";
+            setError(message);
         }
     };
 

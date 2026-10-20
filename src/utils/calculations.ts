@@ -78,7 +78,6 @@ export const allocateCash = (
         const rawRate = cash / totalWeighted;
 
         // First pass: Floor to cents
-        let distributed = 0;
         const shiftsWithRemainder = dayShifts.map(s => {
             const rawAlloc = s.weightedHours * rawRate;
             const floored = Math.floor(rawAlloc * 100) / 100;
@@ -89,11 +88,11 @@ export const allocateCash = (
             };
         });
 
-        distributed = shiftsWithRemainder.reduce((sum, s) => sum + s.cashAllocated, 0);
+        const distributed = shiftsWithRemainder.reduce((sum, s) => sum + s.cashAllocated, 0);
 
         // Calculate cents remaining to distribute
         // Use Math.round to avoid floating point dust e.g. 0.0099999999
-        let centsRemaining = Math.round((cash - distributed) * 100);
+        const centsRemaining = Math.round((cash - distributed) * 100);
 
         // Sort by remainder descending
         shiftsWithRemainder.sort((a, b) => b.remainder - a.remainder);

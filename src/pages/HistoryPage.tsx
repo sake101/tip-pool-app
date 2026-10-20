@@ -9,15 +9,16 @@ export const HistoryPage: React.FC = () => {
     const [payPeriods, setPayPeriods] = useState<PayPeriod[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    const loadData = async () => {
-        setIsLoading(true);
-        const data = await getPayPeriods();
-        setPayPeriods(data);
-        setIsLoading(false);
-    };
-
     useEffect(() => {
-        loadData();
+        let active = true;
+        void getPayPeriods().then((data) => {
+            if (!active) return;
+            setPayPeriods(data);
+            setIsLoading(false);
+        });
+        return () => {
+            active = false;
+        };
     }, []);
 
     const handleLoad = (id: string) => {
@@ -29,7 +30,10 @@ export const HistoryPage: React.FC = () => {
         e.stopPropagation();
         if (confirm('Are you sure you want to delete this pay period?')) {
             await deletePayPeriod(id);
-            loadData();
+            setIsLoading(true);
+            const data = await getPayPeriods();
+            setPayPeriods(data);
+            setIsLoading(false);
         }
     };
 
