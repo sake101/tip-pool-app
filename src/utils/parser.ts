@@ -3,6 +3,10 @@ import * as XLSX from 'xlsx';
 import { ROLE_POINTS } from '../types';
 import type { Shift, ExcludedShift } from '../types';
 
+type RawRow = Record<string, unknown>;
+
+const cellText = (row: RawRow, column: string): string => String(row[column] || '');
+
 export interface ParseResult {
     shifts: Shift[];
     excludedShifts: ExcludedShift[];
@@ -33,7 +37,7 @@ export const normalizeDate = (dateStr: string): string => {
         const month = String(d.getMonth() + 1).padStart(2, '0');
         const day = String(d.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
-    } catch (e) {
+    } catch {
         return dateStr;
     }
 };
@@ -49,15 +53,15 @@ export const parseFile = async (file: File): Promise<ParseResult> => {
                     const data = new Uint8Array(e.target?.result as ArrayBuffer);
                     const workbook = XLSX.read(data, { type: 'array' });
                     const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                    const jsonData = XLSX.utils.sheet_to_json(firstSheet, { defval: "" });
+                    const jsonData = XLSX.utils.sheet_to_json<RawRow>(firstSheet, { defval: "" });
                     resolve(processData(jsonData));
-                } catch (err) {
+                } catch {
                     reject(["Failed to parse Excel file."]);
                 }
             };
             reader.readAsArrayBuffer(file);
         } else {
-            Papa.parse(file, {
+            Papa.parse<RawRow>(file, {
                 header: true,
                 skipEmptyLines: true,
                 complete: (results) => {
@@ -71,7 +75,7 @@ export const parseFile = async (file: File): Promise<ParseResult> => {
     });
 };
 
-const processData = (data: any[]): ParseResult => {
+export const processData = (data: RawRow[]): ParseResult => {
     const shifts: Shift[] = [];
     const excludedShifts: ExcludedShift[] = [];
     const errors: string[] = [];
@@ -98,9 +102,9 @@ const processData = (data: any[]): ParseResult => {
         const rowNum = index + 2; // Header is 1
 
         // Basic extraction
-        const employee = String(row["Employee"] || "").trim();
-        const job = String(row["Job"] || "").trim();
-        const dateRaw = String(row["Date"] || "").trim();
+        const employee = cellText(row, "Employee").trim();
+        const job = cellText(row, "Job").trim();
+        const dateRaw = cellText(row, "Date").trim();
 
         if (!employee || !dateRaw) return; // Skip completely empty rows?
 
@@ -123,11 +127,11 @@ const processData = (data: any[]): ParseResult => {
         }
 
         // 3. Parse Numbers
-        const payableHours = parseFloat(row["Payable Hours"]);
+        const payableHours = parseFloat(cellText(row, "Payable Hours"));
         if (isNaN(payableHours)) {
             excludedShifts.push({
                 ...mapRowToShift(row, rowNum),
-                reason: `Invalid Payable Hours: '${row["Payable Hours"]}'`
+                reason: `Invalid Payable Hours: '${cellText(row, "Payable Hours")}'`
             });
             return;
         }
@@ -139,14 +143,14 @@ const processData = (data: any[]): ParseResult => {
         shifts.push({
             id: crypto.randomUUID(),
             employeeName: employee,
-            location: String(row["Location"] || ""),
+            location: cellText(row, "Location"),
             job: job,
             dateStr: date, // Normalized
-            timeIn: String(row["Time In"] || ""),
-            timeOut: String(row["Time Out"] || ""),
-            totalHours: parseFloat(row["Total Hours"] || "0"),
+            timeIn: cellText(row, "Time In"),
+            timeOut: cellText(row, "Time Out"),
+            totalHours: parseFloat(cellText(row, "Total Hours") || "0"),
             payableHours: payableHours,
-            cashTipsDeclared: parseFloat(row["Cash Tips Declared"] || "0")
+            cashTipsDeclared: parseFloat(cellText(row, "Cash Tips Declared") || "0")
         });
     });
 
@@ -160,17 +164,17 @@ const processData = (data: any[]): ParseResult => {
     };
 };
 
-const mapRowToShift = (row: any, index: number): any => {
+const mapRowToShift = (row: RawRow, index: number): Shift => {
     return {
         id: `row-${index}`,
-        employeeName: String(row["Employee"] || ""),
-        location: String(row["Location"] || ""),
-        job: String(row["Job"] || ""),
-        dateStr: String(row["Date"] || ""),
-        timeIn: String(row["Time In"] || ""),
-        timeOut: String(row["Time Out"] || ""),
-        totalHours: parseFloat(row["Total Hours"] || "0"),
-        payableHours: parseFloat(row["Payable Hours"] || "0"),
-        cashTipsDeclared: parseFloat(row["Cash Tips Declared"] || "0")
+        employeeName: cellText(row, "Employee"),
+        location: cellText(row, "Location"),
+        job: cellText(row, "Job"),
+        dateStr: cellText(row, "Date"),
+        timeIn: cellText(row, "Time In"),
+        timeOut: cellText(row, "Time Out"),
+        totalHours: parseFloat(cellText(row, "Total Hours") || "0"),
+        payableHours: parseFloat(cellText(row, "Payable Hours") || "0"),
+        cashTipsDeclared: parseFloat(cellText(row, "Cash Tips Declared") || "0")
     };
 }
